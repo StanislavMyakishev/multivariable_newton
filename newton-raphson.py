@@ -76,6 +76,7 @@ if __name__ == '__main__':
 
     count = np.array([0])
 
+
     def wrap_f(x):
         count[0] += 1
         return f(x)
@@ -122,8 +123,8 @@ if __name__ == '__main__':
         'Колличество вычислений': counts,
         'Точность': accuracy,
         'Модуль градиента': normGrad,
-        'Найденная значение': fValue,
-        'Найденное точка': fMin,
+        'Найденное значение': fValue,
+        'Найденная точка': fMin,
     })
 
     tf.write(data.to_string() + '\n')
