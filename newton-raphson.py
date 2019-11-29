@@ -1,5 +1,5 @@
-import math
 import numpy as np
+import pandas as pd
 from numpy.linalg import inv
 from numpy.linalg import norm
 from sympy import *
@@ -55,14 +55,11 @@ def newtonRaphson(f, x, gradient, hesseMatrix, eps):
     hesse = hesseMatrix(x[0], x[1])
     cnt = 1
     while norm(grad) > eps:
-        print(grad)
         cnt += 1
         curVals = np.subtract(curVals, np.dot(hesse, grad))
         grad = gradient(curVals[0], curVals[1])
         hesse = hesseMatrix(curVals[0], curVals[1])
-    print(grad)
-    print('norm grad', norm(grad))
-    return f(curVals)
+    return norm(grad), f(curVals), cnt, curVals
 
 
 def reverseHesseMatrix(x1, y1):
@@ -74,5 +71,60 @@ def reverseHesseMatrix(x1, y1):
 
 
 if __name__ == '__main__':
-    print(f([2.779, 2.934]))
-    print(newtonRaphson(f, [4, 3], numerical_gradient, reverseHesseMatrix, 0.01))
+
+    tf = open('./output/newton.txt', 'w')
+
+    count = np.array([0])
+
+    def wrap_f(x):
+        count[0] += 1
+        return f(x)
+
+
+    def wrap_analytical_gradient(x1, x2):
+        count[0] += 2
+        return analytical_gradient(x1, x2)
+
+
+    def wrap_numerical_gradient(x1, x2):
+        count[0] += 2
+        return numerical_gradient(x1, x2)
+
+
+    def wrap_reverseHesseMatrix(x1, x2):
+        count[0] += 1
+        return reverseHesseMatrix(x1, x2)
+
+
+    iters = []
+    counts = []
+    accuracy = []
+    normGrad = []
+    fValue = []
+    fMin = []
+
+    tf.write('Начальная точка: (4, 3)\n')
+    tf.write('Способ вычисления производной: Аналитический\n')
+
+    for e in [0.1, 0.001, 0.00001]:
+        count[0] = 0
+        res = newtonRaphson(wrap_f, [4, 3], wrap_analytical_gradient, wrap_reverseHesseMatrix, e)
+        counts.append(count[0])
+        iters.append(res[2])
+        accuracy.append(e)
+        normGrad.append(res[0])
+        fValue.append(res[1])
+        fMin.append(res[3])
+
+    # return norm(grad), f(curVals), cnt
+    data = pd.DataFrame({
+        'Колличество итераций': iters,
+        'Колличество вычислений': counts,
+        'Точность': accuracy,
+        'Модуль градиента': normGrad,
+        'Найденная точка': fValue,
+        'Найденное значение': fMin,
+    })
+
+    tf.write(data.to_string() + '\n')
+    tf.close()
