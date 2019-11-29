@@ -38,7 +38,7 @@ def analytical_gradient(x1, x2):
     derivative_x1 = 4 * x1 * (x1 ** 2 + x2 - 11) + 2 * x1 + 2 * x2 ** 2 - 14
     derivative_x2 = 2 * x1 ** 2 + 4 * x2 * (x1 + x2 ** 2 - 7) + 2 * x2 - 22
 
-    return np.array([derivative_x1, derivative_x2])
+    return np.array([math.floor(derivative_x1), math.floor(derivative_x2)])
 
 
 def newtonRaphson(f, x, gradient, hesseMatrix, eps):
