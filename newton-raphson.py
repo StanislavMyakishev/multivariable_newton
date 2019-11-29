@@ -25,7 +25,7 @@ def numerical_gradient(x1, x2, dx=1e-6):
     derivative_x1 = (f([x1 + dx, x2]) - f([x1 - dx, x2])) / (2 * dx)
     derivative_x2 = (f([x1, x2 + dx]) - f([x1, x2 - dx])) / (2 * dx)
 
-    return np.array([math.floor(derivative_x1), math.floor(derivative_x2)])
+    return np.array([round(derivative_x1, 20), round(derivative_x2, 20)])
 
 
 def analytical_gradient(x1, x2):
@@ -38,7 +38,7 @@ def analytical_gradient(x1, x2):
     derivative_x1 = 4 * x1 * (x1 ** 2 + x2 - 11) + 2 * x1 + 2 * x2 ** 2 - 14
     derivative_x2 = 2 * x1 ** 2 + 4 * x2 * (x1 + x2 ** 2 - 7) + 2 * x2 - 22
 
-    return np.array([math.floor(derivative_x1), math.floor(derivative_x2)])
+    return np.array([round(derivative_x1, 20), round(derivative_x2, 20)])
 
 
 def newtonRaphson(f, x, gradient, hesseMatrix, eps):
@@ -55,17 +55,13 @@ def newtonRaphson(f, x, gradient, hesseMatrix, eps):
     hesse = hesseMatrix(x[0], x[1])
     cnt = 1
     while norm(grad) > eps:
-        cnt += 1
-        print(curVals)
         print(grad)
-        print(hesse)
+        cnt += 1
         curVals = np.subtract(curVals, np.dot(hesse, grad))
         grad = gradient(curVals[0], curVals[1])
         hesse = hesseMatrix(curVals[0], curVals[1])
-    print(curVals)
     print(grad)
-    print(hesse)
-    print(cnt)
+    print('norm grad', norm(grad))
     return f(curVals)
 
 
@@ -79,5 +75,4 @@ def reverseHesseMatrix(x1, y1):
 
 if __name__ == '__main__':
     print(f([2.779, 2.934]))
-    # print(reverseHesseMatrix(4, 3))
-    print(newtonRaphson(f, [4, 3], numerical_gradient, reverseHesseMatrix, 0.0001))
+    print(newtonRaphson(f, [4, 3], numerical_gradient, reverseHesseMatrix, 0.01))
